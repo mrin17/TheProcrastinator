@@ -199,8 +199,8 @@ public class MainScreen extends javax.swing.JFrame {
                 } 
             }
             reformat();
+            JOptionPane.showMessageDialog(this,"All of your tasks for this day have been moved to the next day.");
        }
-        JOptionPane.showMessageDialog(this,"All of your tasks for this day have been moved to the next day.");
     }//GEN-LAST:event_btnProcrastinateActionPerformed
 
     private void btnLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeftActionPerformed
@@ -248,8 +248,14 @@ public class MainScreen extends javax.swing.JFrame {
             button.addActionListener(listener);
             JLabel times = new JLabel();
             JSlider sld = new JSlider();
+            sld.setName(""+where);
             sld.setExtent(0);
-            sld.setValue(0);
+            sld.setValue(nTask.completion);
+            sld.addChangeListener(slistener);
+            if (nTask.completion == 100)
+                taskPanel.setBackground(Color.green);  
+            else
+                taskPanel.setBackground(Color.white);
             txt.setSize(50, 10);
             taskPanel.add(txt);
             taskPanel.add(times);
@@ -258,13 +264,27 @@ public class MainScreen extends javax.swing.JFrame {
             taskPanel.setSize(182, 70);
             taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
             txt.setText(nTask.name);
-            String starttemptext = nTask.startdate.getHours()+":"+nTask.startdate.getMinutes();
-            String endtemptext = nTask.enddate.getHours()+":"+nTask.enddate.getMinutes();
+            String starttemptext = ""; 
+            int starthours = nTask.startdate.getHours();
+            String startsuffix = "am";
+            String endtemptext = "";
+            int endhours = nTask.startdate.getHours();
+            String endsuffix = "am";
+            if (starthours > 12) {
+                startsuffix = "pm";
+                starthours -= 12;
+            }
+            if (endhours > 12) {
+                endsuffix = "pm";
+                endhours -= 12;
+            }
+            starttemptext = starthours+":"+nTask.startdate.getMinutes()+startsuffix;
+            endtemptext = endhours+":"+nTask.enddate.getMinutes()+endsuffix;
             if (nTask.startdate.getMinutes() < 10) {
-                starttemptext = nTask.startdate.getHours()+":0"+nTask.startdate.getMinutes();
+                starttemptext = starthours+":0"+nTask.startdate.getMinutes()+startsuffix;
             }
             if (nTask.enddate.getMinutes() < 10) {
-                endtemptext = nTask.enddate.getHours()+":0"+nTask.enddate.getMinutes();
+                endtemptext = endhours+":0"+nTask.enddate.getMinutes()+endsuffix;
             }
             times.setText(starttemptext+"-"+endtemptext);
             jPanel1.setSize(182, 50 * taskList.size());
@@ -330,6 +350,7 @@ public class MainScreen extends javax.swing.JFrame {
     public Date nextCurrentDay = new Date();
     public Date tomorrow = new Date();
     public Listener listener = new Listener(this);
+    public SliderListener slistener = new SliderListener(this);
     
     //customized class, record each task
     

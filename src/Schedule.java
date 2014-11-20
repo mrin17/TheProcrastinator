@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.WindowConstants;
 
 /*
  * To change this template, choose Tools | Templates
@@ -31,6 +32,7 @@ public class Schedule extends javax.swing.JDialog {
         m = (MainScreen) parent;
         l = new Listener(this, m);
         reformat();
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     }
     
     //COPIED THIS METHOD FROM MAINSCREEN, edit it if you edit the one in mainscreen
@@ -40,7 +42,7 @@ public class Schedule extends javax.swing.JDialog {
         taskPanel.setName("" + where); //starts at 1 because we added the task already
         JLabel txt = new JLabel(nTask.name);
         JLabel startdate = new JLabel(formatter.format(nTask.startdate));
-        JLabel duedate = new JLabel("Due: "+nTask.duedate);
+        JLabel duedate = new JLabel();
         JButton button = new JButton();
         button.setName("" + where); //starts at 1 because we added the task already
         button.setText("Edit");
@@ -55,14 +57,40 @@ public class Schedule extends javax.swing.JDialog {
         taskPanel.setSize(182, 70);
         taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         txt.setText(nTask.name);
-        String starttemptext = nTask.startdate.getHours() + ":" + nTask.startdate.getMinutes();
-        String endtemptext = nTask.enddate.getHours() + ":" + nTask.enddate.getMinutes();
+        String starttemptext = ""; 
+        int starthours = nTask.startdate.getHours();
+        String startsuffix = "am";
+        String endtemptext = "";
+        int endhours = nTask.startdate.getHours();
+        String endsuffix = "am";
+        String duetemptext = "";
+        int duehours = nTask.duedate.getHours();
+        String duesuffix = "am";
+        if (starthours > 12) {
+            startsuffix = "pm";
+            starthours -= 12;
+        }
+        if (endhours > 12) {
+            endsuffix = "pm";
+            endhours -= 12;
+        }
+        if (duehours > 12) {
+            duesuffix = "pm";
+            duehours -= 12;
+        }
+        starttemptext = starthours+":"+nTask.startdate.getMinutes()+startsuffix;
+        endtemptext = endhours+":"+nTask.enddate.getMinutes()+endsuffix;
+        duetemptext = duehours+":"+nTask.duedate.getMinutes()+duesuffix;
         if (nTask.startdate.getMinutes() < 10) {
-            starttemptext = nTask.startdate.getHours() + ":0" + nTask.startdate.getMinutes();
+            starttemptext = starthours+":0"+nTask.startdate.getMinutes()+startsuffix;
         }
         if (nTask.enddate.getMinutes() < 10) {
-            endtemptext = nTask.enddate.getHours() + ":0" + nTask.enddate.getMinutes();
+            endtemptext = endhours+":0"+nTask.enddate.getMinutes()+endsuffix;
         }
+        if (nTask.duedate.getMinutes() < 10) {
+            duetemptext = duehours+":0"+nTask.duedate.getMinutes()+duesuffix;
+        }
+        duedate.setText("Due: "+formatter.format(nTask.duedate)+" "+duetemptext);
         times.setText(starttemptext + "-" + endtemptext);
         jPanel1.setSize(182, 50 * m.taskList.size());
         if (m.taskList.size() > 4) {
@@ -93,11 +121,24 @@ public class Schedule extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lblTasksToday = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
         spnScrollPane = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
-        lblTasksToday = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        lblTasksToday.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblTasksToday.setText("Schedule");
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jButton2.setText("< Back");
+        jButton2.setToolTipText("");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jPanel1.setFocusable(false);
         jPanel1.setMaximumSize(new java.awt.Dimension(181, 32487));
@@ -107,43 +148,52 @@ public class Schedule extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 256, Short.MAX_VALUE)
+            .addGap(0, 258, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 384, Short.MAX_VALUE)
+            .addGap(0, 375, Short.MAX_VALUE)
         );
 
         spnScrollPane.setViewportView(jPanel1);
-
-        lblTasksToday.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblTasksToday.setText("Schedule");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(spnScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(100, 100, 100)
+                .addComponent(jButton2)
+                .addGap(18, 18, 18)
                 .addComponent(lblTasksToday)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(127, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(spnScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblTasksToday)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(spnScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(405, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jButton2)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(50, Short.MAX_VALUE)
+                    .addComponent(spnScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap()))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -187,6 +237,7 @@ public class Schedule extends javax.swing.JDialog {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblTasksToday;
     private javax.swing.JScrollPane spnScrollPane;

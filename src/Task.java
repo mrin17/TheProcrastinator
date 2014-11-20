@@ -29,6 +29,10 @@ import java.util.*;
             this.completion = 0;
         }
         
+        public void setCompletion(int c) {
+            completion = c;
+        }
+        
         public String debugString() {
             return "name: " + name + " ;" + "duration: " + duration + " ;" 
                 + "startdate: " + startdate + " ;" + "enddate: " + enddate + " ;" + "duedate: " + duedate+ " ;";

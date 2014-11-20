@@ -1,6 +1,5 @@
-The dist/TheProcrastinator.jar is what we should be using, but for some reason its being buggy. Just load up Netbeans, select Open Project, and choose the TheProcrastinator directory. Resolve the conflict using the jcalendar-1.4jar inside TheProcrastinator. Then Build it. 
-
-Before we begin, the software is a little buggy in respect to the edit task boxes. Just assume that if you edit a task, the boxes load to what they should be. Change them anyways to what they should be if they are not. Also, assume the sliders work.
+Run: dist/TheProcrastinator.jar
+The file was fixed.
 
 Briefing:
 Hi, we’re designing a new scheduling app called the Procrastinator that will help you organize all of your tasks. You can create tasks, set times for tasks, and procrastinate if you think you will not be able to finish your work today. It is going to be a phone application.
