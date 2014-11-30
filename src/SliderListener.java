@@ -4,6 +4,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JOptionPane;
 import javax.swing.*;
+import java.awt.Component;
 
 /*
  * To change this template, choose Tools | Templates
@@ -33,6 +34,11 @@ public class SliderListener implements ChangeListener{
         //JOptionPane.showMessageDialog(m,""+index);
         //get task and change completion percent
         m.taskList.get(index).setCompletion(sld.getValue());
+        Component[] comps = sld.getParent().getComponents();
+        for (Component c : comps) {
+            if (c.getName().compareTo("comp") == 0)
+                ((JLabel) c).setText("Completion: "+sld.getValue()+"%");
+        }
         //JOptionPane.showMessageDialog(m,m.taskList.get(index).completion);
         if (sld.getValue() == 100)
             sld.getParent().setBackground(Color.green);

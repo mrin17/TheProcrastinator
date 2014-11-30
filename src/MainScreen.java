@@ -5,9 +5,9 @@
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.*;
-import java.awt.Dimension;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 /**
  *
  * @author Michael
@@ -51,7 +51,7 @@ public class MainScreen extends javax.swing.JFrame {
         });
 
         lblTasksToday.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblTasksToday.setText("Tasks:");
+        lblTasksToday.setText("Today:");
 
         jPanel1.setFocusable(false);
         jPanel1.setMaximumSize(new java.awt.Dimension(181, 32487));
@@ -199,23 +199,23 @@ public class MainScreen extends javax.swing.JFrame {
         schedule.show(); 
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    public static Date addDays(Date date, int days)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        return cal.getTime();
+    }
+    
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         SimpleDateFormat formatter = new SimpleDateFormat( "MM/dd/yyyy" );
-        lblTasksToday.setText("Tasks: "+formatter.format(currentDay));
-        tomorrow.setDate(today.getDate()+1);
-        tomorrow.setHours(0);
-        tomorrow.setMinutes(0);
-        tomorrow.setSeconds(0);
+        lblTasksToday.setText("Today: "+formatter.format(currentDay));
         today.setHours(0);
         today.setMinutes(0);
         today.setSeconds(0);
-        currentDay.setHours(0);
-        currentDay.setMinutes(0);
-        currentDay.setSeconds(0);
-        nextCurrentDay.setDate(currentDay.getDate()+1);
-        nextCurrentDay.setHours(0);
-        nextCurrentDay.setMinutes(0);
-        nextCurrentDay.setSeconds(0);
+        tomorrow = addDays(today, 1);
+        currentDay = today;
+        nextCurrentDay = tomorrow;
     }//GEN-LAST:event_formWindowActivated
 
     private void btnProcrastinateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcrastinateActionPerformed
@@ -238,18 +238,24 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProcrastinateActionPerformed
 
     private void btnLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeftActionPerformed
-        currentDay.setDate(currentDay.getDate()-1);
-        nextCurrentDay.setDate(nextCurrentDay.getDate()-1);
+        currentDay = addDays(currentDay, -1);
+        nextCurrentDay = addDays(nextCurrentDay, -1);
         SimpleDateFormat formatter = new SimpleDateFormat( "MM/dd/yyyy" );
-        lblTasksToday.setText("Tasks: "+formatter.format(currentDay));
+        if (!currentDay.before(today) && currentDay.before(tomorrow))
+            lblTasksToday.setText("Today: "+formatter.format(currentDay));
+        else
+            lblTasksToday.setText("          "+formatter.format(currentDay));
         reformat();
     }//GEN-LAST:event_btnLeftActionPerformed
 
     private void btnRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRightActionPerformed
-        currentDay.setDate(currentDay.getDate()+1);
-        nextCurrentDay.setDate(nextCurrentDay.getDate()+1);
+        currentDay = addDays(currentDay, 1);
+        nextCurrentDay = addDays(nextCurrentDay, 1);
         SimpleDateFormat formatter = new SimpleDateFormat( "MM/dd/yyyy" );
-        lblTasksToday.setText("Tasks: "+formatter.format(currentDay));
+        if (!currentDay.before(today) && currentDay.before(tomorrow))
+            lblTasksToday.setText("Today: "+formatter.format(currentDay));
+        else
+            lblTasksToday.setText("          "+formatter.format(currentDay));
         reformat();
     }//GEN-LAST:event_btnRightActionPerformed
 
@@ -260,19 +266,20 @@ public class MainScreen extends javax.swing.JFrame {
     public void addTask(Task nTask) {
         boolean added = false;
         for (int i = 0; i < taskList.size(); i++) {
-            if (taskList.get(i).startdate.after(nTask.startdate)) {
-                taskList.add(i+1, nTask);
+            if (nTask.startdate.before(taskList.get(i).startdate)) {
+                taskList.add(i, nTask);
                 added = true;
+                break;
             }
         }
         if (!added) {
             taskList.add(nTask);
         }
-        displayTask(nTask, taskList.size()-1);
+        reformat();
     }
     
     public boolean isToday(Task nTask) {
-        return (nTask.startdate.compareTo(currentDay) >= 0 && nTask.startdate.compareTo(nextCurrentDay) < 0);
+        return (nTask.startdate.after(currentDay) && nTask.startdate.before(nextCurrentDay));
     }
     
     public void displayTask(Task nTask, int where) {
@@ -280,11 +287,15 @@ public class MainScreen extends javax.swing.JFrame {
             JPanel taskPanel = new JPanel();
             taskPanel.setName(""+where);
             JLabel txt = new JLabel(nTask.name);
+            txt.setName(nTask.name);
+            JLabel comp = new JLabel("Completion: "+nTask.completion+"%");
+            comp.setName("comp");
             JButton button = new JButton();
             button.setName(""+where);
             button.setText("Edit");
             button.addActionListener(listener);
             JLabel times = new JLabel();
+            times.setName("times");
             JSlider sld = new JSlider();
             sld.setName(""+where);
             sld.setExtent(0);
@@ -298,6 +309,7 @@ public class MainScreen extends javax.swing.JFrame {
             taskPanel.add(txt);
             taskPanel.add(times);
             taskPanel.add(button);
+            taskPanel.add(comp);
             taskPanel.add(sld);
             taskPanel.setSize(182, 70);
             taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -306,7 +318,7 @@ public class MainScreen extends javax.swing.JFrame {
             int starthours = nTask.startdate.getHours();
             String startsuffix = "am";
             String endtemptext = "";
-            int endhours = nTask.startdate.getHours();
+            int endhours = nTask.enddate.getHours();
             String endsuffix = "am";
             if (starthours > 12) {
                 startsuffix = "pm";
@@ -342,7 +354,7 @@ public class MainScreen extends javax.swing.JFrame {
         for (int i = 0; i < taskList.size(); i++) {
             displayTask(taskList.get(i), i);
         }
-        jPanel1.revalidate();
+        //jPanel1.revalidate();
         jPanel1.repaint();
     }
     

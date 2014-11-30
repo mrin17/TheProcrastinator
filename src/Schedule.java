@@ -57,11 +57,15 @@ public class Schedule extends javax.swing.JDialog {
         taskPanel.setSize(182, 70);
         taskPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         txt.setText(nTask.name);
+        if (nTask.completion == 100)
+            taskPanel.setBackground(Color.green);  
+        else
+            taskPanel.setBackground(Color.white);
         String starttemptext = ""; 
         int starthours = nTask.startdate.getHours();
         String startsuffix = "am";
         String endtemptext = "";
-        int endhours = nTask.startdate.getHours();
+        int endhours = nTask.enddate.getHours();
         String endsuffix = "am";
         String duetemptext = "";
         int duehours = nTask.duedate.getHours();
